@@ -33,7 +33,8 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class AppController implements Initializable{
+public class AppController implements Initializable {
+
     public JFXButton btnTrash;
     public JFXButton btnDiamond;
     @FXML
@@ -47,9 +48,9 @@ public class AppController implements Initializable{
     @FXML
     private JFXRadioButton radioRightHuman;
     @FXML
-    private  ToggleGroup toggleLeft;
+    private ToggleGroup toggleLeft;
     @FXML
-    private  ToggleGroup toggleRight;
+    private ToggleGroup toggleRight;
 
     @FXML
     private JFXButton btnStart;
@@ -66,15 +67,14 @@ public class AppController implements Initializable{
     public void initialize(URL location, ResourceBundle resources) {
         ObservableList<IBot> bots = FXCollections.observableArrayList();
 
-        Path dir = FileSystems.getDefault().getPath( "./src/dk/easv/bll/bot" );
-        try(DirectoryStream<Path> stream = Files.newDirectoryStream( dir, "*.java" )) {
+        Path dir = FileSystems.getDefault().getPath("./src/dk/easv/bll/bot");
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.java")) {
             for (Path path : stream) {
-                String classPathAndName = "dk.easv.bll.bot."+getFilenameNoExtension(path);
+                String classPathAndName = "dk.easv.bll.bot." + getFilenameNoExtension(path);
                 URL[] urls = {path.toFile().toURI().toURL()};
                 ClassLoader cl = new URLClassLoader(urls);
                 Class clazz = cl.loadClass(classPathAndName);
-                if(!clazz.isInterface())
-                {
+                if (!clazz.isInterface()) {
                     IBot bot = (IBot) clazz.newInstance();
                     bots.add(bot);
                 }
@@ -83,7 +83,6 @@ public class AppController implements Initializable{
         catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(AppController.class.getName()).log(Level.SEVERE, null, ex);
         }
-        
 
         comboBotsLeft.setButtonCell(new CustomIBotListCell());
         comboBotsLeft.setCellFactory(p -> new CustomIBotListCell());
@@ -108,47 +107,41 @@ public class AppController implements Initializable{
 
     private Text getFontAwesomeIconFromPlayerId(String playerId) throws RuntimeException {
         Text fontAwesomeIcon = FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.ASTERISK);
-        if(playerId.equals("0"))
+        if (playerId.equals("0")) {
             return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.DIAMOND);
-        else if (playerId.equals("1"))
+        }
+        else if (playerId.equals("1")) {
             return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.TRASH);
-        else if(playerId.equals("TIE"))
+        }
+        else if (playerId.equals("TIE")) {
             return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.BLACK_TIE);
-        else
+        }
+        else {
             throw new RuntimeException("PlayerId not valid");
-    }
-
-    public void leftAISelected(ActionEvent actionEvent) {
-    }
-
-    public void leftHumanSelected(ActionEvent actionEvent) {
-    }
-
-    public void rightHumanSelected(ActionEvent actionEvent) {
-    }
-
-    public void rightAISelected(ActionEvent actionEvent) {
+        }
     }
 
     private class CustomIBotListCell extends ListCell<IBot> {
-        @Override protected void updateItem(IBot item, boolean empty) {
+
+        @Override
+        protected void updateItem(IBot item, boolean empty) {
             super.updateItem(item, empty);
             if (!empty && item != null) {
                 setText(item.getBotName());
-            } else {
+            }
+            else {
                 setText(null);
             }
         }
     }
 
-    private String getFilenameNoExtension(Path path){
+    private String getFilenameNoExtension(Path path) {
         String fileName = path.getFileName().toFile().getName();
-        if (fileName.indexOf(".") > 0)
+        if (fileName.indexOf(".") > 0) {
             fileName = fileName.substring(0, fileName.lastIndexOf("."));
+        }
         return fileName;
     }
-
-
 
     public void clickStart(ActionEvent actionEvent) throws IOException {
         Stage primaryStage = new Stage();
@@ -157,23 +150,39 @@ public class AppController implements Initializable{
 
         Parent root = fxLoader.load();
 
-        UTTTGameController controller = ((UTTTGameController)fxLoader.getController());
+        UTTTGameController controller = ((UTTTGameController) fxLoader.getController());
 
-        if(toggleLeft.getSelectedToggle().equals(radioLeftAI) &&
-                toggleRight.getSelectedToggle().equals(radioRightAI))     {
-            controller.setupGame(comboBotsLeft.getSelectionModel().getSelectedItem(),  comboBotsRight.getSelectionModel().getSelectedItem());
+        if (toggleLeft.getSelectedToggle().equals(radioLeftAI)
+                && toggleRight.getSelectedToggle().equals(radioRightAI)) {
+            controller.setupGame(comboBotsLeft.getSelectionModel().getSelectedItem(), comboBotsRight.getSelectionModel().getSelectedItem());
+            primaryStage.setTitle(
+                    comboBotsLeft.getSelectionModel().getSelectedItem().getBotName()
+                    + " vs "
+                    + comboBotsRight.getSelectionModel().getSelectedItem().getBotName());
         }
-        else if(toggleLeft.getSelectedToggle().equals(radioLeftHuman) &&
-                toggleRight.getSelectedToggle().equals(radioRightAI))     {
-            controller.setupGame(txtHumanNameLeft.getText(),  comboBotsRight.getSelectionModel().getSelectedItem());
+        else if (toggleLeft.getSelectedToggle().equals(radioLeftHuman)
+                && toggleRight.getSelectedToggle().equals(radioRightAI)) {
+            controller.setupGame(txtHumanNameLeft.getText(), comboBotsRight.getSelectionModel().getSelectedItem());
+            primaryStage.setTitle(
+                    txtHumanNameLeft.getText()
+                    + " vs "
+                    + comboBotsRight.getSelectionModel().getSelectedItem().getBotName());
         }
-        else if(toggleLeft.getSelectedToggle().equals(radioLeftAI) &&
-                toggleRight.getSelectedToggle().equals(radioRightHuman))     {
-            controller.setupGame(comboBotsLeft.getSelectionModel().getSelectedItem(),  txtHumanNameRight.getText());
+        else if (toggleLeft.getSelectedToggle().equals(radioLeftAI)
+                && toggleRight.getSelectedToggle().equals(radioRightHuman)) {
+            controller.setupGame(comboBotsLeft.getSelectionModel().getSelectedItem(), txtHumanNameRight.getText());
+            primaryStage.setTitle(
+                    comboBotsLeft.getSelectionModel().getSelectedItem().getBotName()
+                    + " vs "
+                    + txtHumanNameRight.getText());
         }
-        else if(toggleLeft.getSelectedToggle().equals(radioLeftHuman) &&
-                toggleRight.getSelectedToggle().equals(radioRightHuman))     {
-            controller.setupGame(txtHumanNameLeft.getText(),  txtHumanNameRight.getText());
+        else if (toggleLeft.getSelectedToggle().equals(radioLeftHuman)
+                && toggleRight.getSelectedToggle().equals(radioRightHuman)) {
+            controller.setupGame(txtHumanNameLeft.getText(), txtHumanNameRight.getText());
+            primaryStage.setTitle(
+                    txtHumanNameLeft.getText()
+                    + " vs "
+                    + txtHumanNameRight.getText());
         }
         controller.startGame();
         Scene scene = new Scene(root);

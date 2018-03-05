@@ -66,59 +66,75 @@ public class UTTTGameController implements Initializable {
         }
         // AIvsHuman
         else if (bot0 != null && player1 != null) {
-            int currentPlayer = model.getCurrentPlayer();
-            Boolean valid = model.doMove();
-            checkAndLockIfGameEnd(currentPlayer);
+            doBotMove();
         }
         // AIvsAI
         else if (bot0 != null && bot1 != null) {
             Thread t = new Thread(() -> {
                 while (model.getGameOverState() == GameManager.GameOverState.Active) {
-                    int currentPlayer = model.getCurrentPlayer();
-                    Boolean valid = model.doMove();
-                    checkAndLockIfGameEnd(currentPlayer);
+                    doBotMove();
                     try {
                         Thread.sleep(BOTDELAY);
                     }
                     catch (InterruptedException ex) {
                         Logger.getLogger(UTTTGameController.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    
+
                 }
             });
             t.setDaemon(true); // Stops thread when main thread dies
             t.start();
         }
     }
-    private String getWinnerName(int winnerId)
-    {
-        if(winnerId==0){
-            if(bot0!=null)
+
+    private void doBotMove() {
+        int currentPlayer = model.getCurrentPlayer();
+        Boolean valid = model.doMove();
+        checkAndLockIfGameEnd(currentPlayer);
+    }
+
+    private boolean doMove(IMove move) {
+        int currentPlayer = model.getCurrentPlayer();
+        boolean validMove = model.doMove(move);
+        checkAndLockIfGameEnd(currentPlayer);
+        return validMove;
+    }
+
+    private String getWinnerName(int winnerId) {
+        if (winnerId == 0) {
+            if (bot0 != null) {
                 return bot0.getBotName();
-            else
+            }
+            else {
                 return player0;
+            }
         }
-        else if(winnerId==1) {
-            if(bot1!=null)
+        else if (winnerId == 1) {
+            if (bot1 != null) {
                 return bot1.getBotName();
-            else
+            }
+            else {
                 return player1;
+            }
         }
         throw new RuntimeException("Player id not found " + winnerId);
     }
+
     private void showWinnerPane(String winner) {
         String winMsg;
-        if(winner.equalsIgnoreCase("TIE"))
+        if (winner.equalsIgnoreCase("TIE")) {
             winMsg = "Game tie";
-        else
+        }
+        else {
             winMsg = getWinnerName(Integer.parseInt(winner)) + " wins";
-        
+        }
+
         Label lblWinAnnounce = new Label(winMsg);
         lblWinAnnounce.setAlignment(Pos.CENTER);
         lblWinAnnounce.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
         lblWinAnnounce.getStyleClass().add("winner-text");
         lblWinAnnounce.getStyleClass().add("player" + winner);
-        
+
         Label lbl = new Label();
         lbl.getStyleClass().add("winmsg");
         lbl.getStyleClass().add("player" + winner);
@@ -126,7 +142,7 @@ public class UTTTGameController implements Initializable {
         lbl.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
         lbl.setAlignment(Pos.CENTER);
 
-        Text fontAwesomeIcon = getFontAwesomeIconFromPlayerId(winner+"");
+        Text fontAwesomeIcon = getFontAwesomeIconFromPlayerId(winner + "");
         lbl.setGraphic(fontAwesomeIcon);
         GridPane gridPane = new GridPane();
         gridPane.addColumn(0);
@@ -206,9 +222,7 @@ public class UTTTGameController implements Initializable {
 
                                     boolean isHumanVsBot = player0 != null ^ player1 != null;
                                     if (isHumanVsBot) {
-                                        int currentPlayer = model.getCurrentPlayer();
-                                        Boolean valid = model.doMove();
-                                        checkAndLockIfGameEnd(currentPlayer);
+                                        doBotMove();
                                     }
                                 }
                         );
@@ -240,13 +254,6 @@ public class UTTTGameController implements Initializable {
                 showWinnerPane(currentPlayer + "");
             }
         }
-    }
-
-    private boolean doMove(IMove move) {
-        int currentPlayer = model.getCurrentPlayer();
-        boolean validMove = model.doMove(move);
-        checkAndLockIfGameEnd(currentPlayer);
-        return validMove;
     }
 
     private Text getFontAwesomeIconFromPlayerId(String playerId) throws RuntimeException {
@@ -288,27 +295,22 @@ public class UTTTGameController implements Initializable {
                     else {
                         gridMicros[i][k].getStyleClass().removeAll("highlight");
                     }
-                }
-            }
-        }
 
-        for (int i = 0; i < macroBoard.length; i++) {
-            for (int k = 0; k < macroBoard[i].length; k++) {
-                // There is a win
-                if (!macroBoard[i][k].equals(IField.AVAILABLE_FIELD)
-                        && !macroBoard[i][k].equals(IField.EMPTY_FIELD)
-                        && gridMicros[i][k] != null) {
-                    gridMacro.getChildren().remove(gridMicros[i][k]);
-                    Label lbl = new Label("");
-                    Text fontAwesomeIcon = getFontAwesomeIconFromPlayerId(macroBoard[i][k]);
-                    lbl.setGraphic(fontAwesomeIcon);
-                    lbl.getStyleClass().add("winner-label");
-                    lbl.getStyleClass().add("player" + macroBoard[i][k]);
-                    lbl.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                    gridMicros[i][k] = null;
-                    gridMacro.add(lbl, i, k);
+                    // If there is a win
+                    if (!macroBoard[i][k].equals(IField.AVAILABLE_FIELD)
+                            && !macroBoard[i][k].equals(IField.EMPTY_FIELD)
+                            && gridMicros[i][k] != null) {
+                        gridMacro.getChildren().remove(gridMicros[i][k]);
+                        Label lbl = new Label("");
+                        Text fontAwesomeIcon = getFontAwesomeIconFromPlayerId(macroBoard[i][k]);
+                        lbl.setGraphic(fontAwesomeIcon);
+                        lbl.getStyleClass().add("winner-label");
+                        lbl.getStyleClass().add("player" + macroBoard[i][k]);
+                        lbl.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
+                        gridMicros[i][k] = null;
+                        gridMacro.add(lbl, i, k);
+                    }
                 }
-
             }
         }
 

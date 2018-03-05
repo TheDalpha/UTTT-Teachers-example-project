@@ -40,7 +40,7 @@
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></JFXButton>
-            <JFXRadioButton fx:id="radioLeftHuman" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#leftHumanSelected" selected="true" styleClass="selectors" text="Human" GridPane.rowIndex="2">
+            <JFXRadioButton fx:id="radioLeftHuman" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" selected="true" styleClass="selectors" text="Human" GridPane.rowIndex="2">
                <toggleGroup>
                   <ToggleGroup fx:id="toggleLeft" />
                </toggleGroup>
@@ -53,7 +53,7 @@
                <GridPane.margin>
                   <Insets left="5.0" right="5.0" />
                </GridPane.margin></JFXTextField>
-            <JFXRadioButton fx:id="radioLeftAI" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#leftAISelected" styleClass="selectors" text="AI" toggleGroup="$toggleLeft" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <JFXRadioButton fx:id="radioLeftAI" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="selectors" text="AI" toggleGroup="$toggleLeft" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <JFXComboBox fx:id="comboBotsLeft" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="25.0" prefWidth="138.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <styleClass>
                   <String fx:value="selectors" />
@@ -70,12 +70,12 @@
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></JFXButton>
-            <JFXRadioButton fx:id="radioRightHuman" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#rightHumanSelected" selected="true" styleClass="selectors" text="Human" GridPane.columnIndex="2" GridPane.rowIndex="2">
+            <JFXRadioButton fx:id="radioRightHuman" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" selected="true" styleClass="selectors" text="Human" GridPane.columnIndex="2" GridPane.rowIndex="2">
                <toggleGroup>
                   <ToggleGroup fx:id="toggleRight" />
                </toggleGroup>
             </JFXRadioButton>
-            <JFXRadioButton fx:id="radioRightAI" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onAction="#rightAISelected" styleClass="selectors" text="AI" toggleGroup="$toggleRight" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+            <JFXRadioButton fx:id="radioRightAI" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="selectors" text="AI" toggleGroup="$toggleRight" GridPane.columnIndex="3" GridPane.rowIndex="2" />
             <JFXTextField fx:id="txtHumanNameLeft" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.rowIndex="3">
                <styleClass>
                   <String fx:value="selectors" />
