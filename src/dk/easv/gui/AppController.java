@@ -1,10 +1,9 @@
 package dk.easv.gui;
 
 import com.jfoenix.controls.*;
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 import dk.easv.bll.bot.IBot;
-import javafx.collections.FXCollections;
+import static dk.easv.gui.util.FontAwesomeHelper.getFontAwesomeIconFromPlayerId;
+import static dk.easv.dal.FileHelper.loadBotList;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -14,21 +13,15 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLClassLoader;
-import java.nio.file.DirectoryStream;
-import java.nio.file.FileSystems;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.collections.FXCollections;
 
 public class AppController implements Initializable {
 
@@ -52,8 +45,6 @@ public class AppController implements Initializable {
     @FXML
     private JFXButton btnStart;
     @FXML
-    private AnchorPane anchorMain;
-    @FXML
     private JFXComboBox<IBot> comboBotsRight;
     @FXML
     private JFXComboBox<IBot> comboBotsLeft;
@@ -65,19 +56,8 @@ public class AppController implements Initializable {
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         ObservableList<IBot> bots = FXCollections.observableArrayList();
-
-        Path dir = FileSystems.getDefault().getPath("./src/dk/easv/bll/bot");
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir, "*.java")) {
-            for (Path path : stream) {
-                String classPathAndName = "dk.easv.bll.bot." + getFilenameNoExtension(path);
-                URL[] urls = {path.toFile().toURI().toURL()};
-                ClassLoader cl = new URLClassLoader(urls);
-                Class clazz = cl.loadClass(classPathAndName);
-                if (!clazz.isInterface()) {
-                    IBot bot = (IBot) clazz.newInstance();
-                    bots.add(bot);
-                }
-            }
+        try {
+            bots = loadBotList();
         }
         catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
             Logger.getLogger(AppController.class.getName()).log(Level.SEVERE, null, ex);
@@ -103,45 +83,17 @@ public class AppController implements Initializable {
         comboBotsRight.setDisable(true);
 
     }
-
-    private Text getFontAwesomeIconFromPlayerId(String playerId) throws RuntimeException {
-        Text fontAwesomeIcon = FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.ASTERISK);
-        if (playerId.equals("0")) {
-            return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.DIAMOND);
-        }
-        else if (playerId.equals("1")) {
-            return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.TRASH);
-        }
-        else if (playerId.equals("TIE")) {
-            return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.BLACK_TIE);
-        }
-        else {
-            throw new RuntimeException("PlayerId not valid");
-        }
-    }
-
     private class CustomIBotListCell extends ListCell<IBot> {
 
         @Override
         protected void updateItem(IBot item, boolean empty) {
             super.updateItem(item, empty);
-            if (!empty && item != null) {
+            if (!empty && item != null)
                 setText(item.getBotName());
-            }
-            else {
+            else
                 setText(null);
-            }
         }
     }
-
-    private String getFilenameNoExtension(Path path) {
-        String fileName = path.getFileName().toFile().getName();
-        if (fileName.indexOf(".") > 0) {
-            fileName = fileName.substring(0, fileName.lastIndexOf("."));
-        }
-        return fileName;
-    }
-
     @FXML
     public void clickStart(ActionEvent actionEvent) throws IOException {
         Stage primaryStage = new Stage();

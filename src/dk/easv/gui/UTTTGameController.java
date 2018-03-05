@@ -3,16 +3,12 @@ package dk.easv.gui;
 import com.jfoenix.controls.JFXButton;
 
 import dk.easv.bll.bot.*;
-// https://bintray.com/jerady/maven/FontAwesomeFX/8.15#files/de%2Fjensd%2Ffontawesomefx-commons%2F8.15
-// https://bintray.com/jerady/maven/FontAwesomeFX/8.15#files/de%2Fjensd%2Ffontawesomefx-fontawesome%2F4.7.0-5
-// https://bintray.com/jerady/maven/FontAwesomeFX/8.15#files/de%2Fjensd%2Ffontawesomefx-materialdesignfont%2F1.7.22-4
-import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
-import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 
 import dk.easv.bll.field.IField;
 import dk.easv.bll.game.GameManager;
 import dk.easv.bll.move.IMove;
 import dk.easv.bll.move.Move;
+import static dk.easv.gui.util.FontAwesomeHelper.getFontAwesomeIconFromPlayerId;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -51,9 +47,8 @@ public class UTTTGameController implements Initializable {
     }
 
     public void startGame() {
-        if (model != null) {
-            model.removeListener(observable -> update());
-        }
+        if (model != null) model.removeListener(observable -> update());
+        
         model.addListener(observable -> update());
 
         // HumanVsHuman
@@ -79,7 +74,6 @@ public class UTTTGameController implements Initializable {
                     catch (InterruptedException ex) {
                         Logger.getLogger(UTTTGameController.class.getName()).log(Level.SEVERE, null, ex);
                     }
-
                 }
             });
             t.setDaemon(true); // Stops thread when main thread dies
@@ -102,32 +96,26 @@ public class UTTTGameController implements Initializable {
 
     private String getWinnerName(int winnerId) {
         if (winnerId == 0) {
-            if (bot0 != null) {
+            if (bot0 != null)
                 return bot0.getBotName();
-            }
-            else {
+            else
                 return player0;
-            }
         }
         else if (winnerId == 1) {
-            if (bot1 != null) {
+            if (bot1 != null)
                 return bot1.getBotName();
-            }
-            else {
+            else
                 return player1;
-            }
         }
         throw new RuntimeException("Player id not found " + winnerId);
     }
 
     private void showWinnerPane(String winner) {
         String winMsg;
-        if (winner.equalsIgnoreCase("TIE")) {
+        if (winner.equalsIgnoreCase("TIE"))
             winMsg = "Game tie";
-        }
-        else {
+        else
             winMsg = getWinnerName(Integer.parseInt(winner)) + " wins";
-        }
 
         Label lblWinAnnounce = new Label(winMsg);
         lblWinAnnounce.setAlignment(Pos.CENTER);
@@ -237,7 +225,6 @@ public class UTTTGameController implements Initializable {
 
     private void checkAndLockIfGameEnd(int currentPlayer) {
         if (model.getGameOverState() != GameManager.GameOverState.Active) {
-            System.out.println("GAME OVER + " + model.getGameOverState() + " " + currentPlayer);
             String[][] macroboard = model.getMacroboard();
             // Lock game
             for (int i = 0; i < 3; i++) {
@@ -256,20 +243,6 @@ public class UTTTGameController implements Initializable {
         }
     }
 
-    private Text getFontAwesomeIconFromPlayerId(String playerId) throws RuntimeException {
-        Text fontAwesomeIcon = FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.ASTERISK);
-        switch (playerId) {
-            case "0":
-                return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.DIAMOND);
-            case "1":
-                return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.TRASH);
-            case "TIE":
-                return FontAwesomeIconFactory.get().createIcon(FontAwesomeIcon.BLACK_TIE);
-            default:
-                throw new RuntimeException("PlayerId not valid");
-        }
-    }
-
     private void updateGUI() throws RuntimeException {
         String[][] board = model.getBoard();
         for (int i = 0; i < board.length; i++) {
@@ -278,9 +251,8 @@ public class UTTTGameController implements Initializable {
                     jfxButtons[i][k].getStyleClass().add("empty");
                 }
                 else {
-                    Text fontAwesomeIcon = getFontAwesomeIconFromPlayerId(board[i][k]);
                     jfxButtons[i][k].getStyleClass().add("player" + board[i][k]);
-                    jfxButtons[i][k].setGraphic(fontAwesomeIcon);
+                    jfxButtons[i][k].setGraphic(getFontAwesomeIconFromPlayerId(board[i][k]));
                 }
 
             }
@@ -301,15 +273,7 @@ public class UTTTGameController implements Initializable {
                     if (!macroBoard[i][k].equals(IField.AVAILABLE_FIELD)
                             && !macroBoard[i][k].equals(IField.EMPTY_FIELD)
                             && gridMicros[i][k] != null) {
-                        gridMacro.getChildren().remove(gridMicros[i][k]);
-                        Label lbl = new Label("");
-                        Text fontAwesomeIcon = getFontAwesomeIconFromPlayerId(macroBoard[i][k]);
-                        lbl.setGraphic(fontAwesomeIcon);
-                        lbl.getStyleClass().add("winner-label");
-                        lbl.getStyleClass().add("player" + macroBoard[i][k]);
-                        lbl.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
-                        gridMicros[i][k] = null;
-                        gridMacro.add(lbl, i, k);
+                        setMacroWinner(i, k);
                     }
                 }
             }
@@ -317,7 +281,19 @@ public class UTTTGameController implements Initializable {
 
     }
 
-    private void updateConsole() {
+    private void setMacroWinner(int x, int y) {
+        String[][] macroBoard = model.getMacroboard();
+        gridMacro.getChildren().remove(gridMicros[x][y]);
+        Label lbl = new Label("");
+        lbl.setGraphic(getFontAwesomeIconFromPlayerId(macroBoard[x][y]));
+        lbl.getStyleClass().add("winner-label");
+        lbl.getStyleClass().add("player" + macroBoard[x][y]);
+        lbl.setPrefSize(Double.MAX_VALUE, Double.MAX_VALUE);
+        gridMicros[x][y] = null;
+        gridMacro.add(lbl, x, y);
+    }
+
+    private void printBoardInConsole() {
         String[][] board = model.getGameState().getField().getBoard();
         for (int i = 0; i < board.length; i++) {
             for (int k = 0; k < board[i].length; k++) {
@@ -325,8 +301,6 @@ public class UTTTGameController implements Initializable {
             }
             System.out.println();
         }
-        System.out.println();
-        System.out.println();
         System.out.println();
     }
 
