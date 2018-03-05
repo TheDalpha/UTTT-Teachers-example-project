@@ -28,7 +28,7 @@ import java.util.logging.Logger;
 
 public class UTTTGameController implements Initializable {
 
-    private static final long BOTDELAY = 500;
+    private long botDelay = 500;
     @FXML
     private GridPane gridMacro;
 
@@ -74,7 +74,7 @@ public class UTTTGameController implements Initializable {
                 while (model.getGameOverState() == GameManager.GameOverState.Active) {
                     doBotMove();
                     try {
-                        Thread.sleep(BOTDELAY);
+                        Thread.sleep(botDelay);
                     }
                     catch (InterruptedException ex) {
                         Logger.getLogger(UTTTGameController.class.getName()).log(Level.SEVERE, null, ex);
@@ -289,6 +289,7 @@ public class UTTTGameController implements Initializable {
         for (int i = 0; i < macroBoard.length; i++) {
             for (int k = 0; k < macroBoard[i].length; k++) {
                 if (gridMicros[i][k] != null) {
+                    // Highlight available plays
                     if (macroBoard[i][k].equals(IField.AVAILABLE_FIELD)) {
                         gridMicros[i][k].getStyleClass().add("highlight");
                     }
@@ -356,5 +357,9 @@ public class UTTTGameController implements Initializable {
         model = new BoardModel();
         this.player0 = humanName0;
         this.player1 = humanName1;
+    }
+
+    public void setSpeed(double speed) {
+        botDelay = Math.round(speed);
     }
 }

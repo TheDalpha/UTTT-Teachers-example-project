@@ -1,9 +1,6 @@
 package dk.easv.gui;
 
-import com.jfoenix.controls.JFXButton;
-import com.jfoenix.controls.JFXComboBox;
-import com.jfoenix.controls.JFXRadioButton;
-import com.jfoenix.controls.JFXTextField;
+import com.jfoenix.controls.*;
 import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon;
 import de.jensd.fx.glyphs.fontawesome.utils.FontAwesomeIconFactory;
 import dk.easv.bll.bot.IBot;
@@ -62,6 +59,8 @@ public class AppController implements Initializable {
     private JFXComboBox<IBot> comboBotsLeft;
     @FXML
     private JFXRadioButton radioLeftHuman;
+    @FXML
+    private JFXSlider sliderSpeed;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -143,6 +142,7 @@ public class AppController implements Initializable {
         return fileName;
     }
 
+    @FXML
     public void clickStart(ActionEvent actionEvent) throws IOException {
         Stage primaryStage = new Stage();
         primaryStage.initModality(Modality.WINDOW_MODAL);
@@ -184,6 +184,7 @@ public class AppController implements Initializable {
                     + " vs "
                     + txtHumanNameRight.getText());
         }
+        controller.setSpeed(sliderSpeed.getMax()-sliderSpeed.getValue());
         controller.startGame();
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
