@@ -65,6 +65,10 @@
     -icons-color: lightgoldenrodyellow;
 }
 
+.stat-items{
+    -fx-text-fill: lightgoldenrodyellow;
+}
+
 .empty{
 
 }

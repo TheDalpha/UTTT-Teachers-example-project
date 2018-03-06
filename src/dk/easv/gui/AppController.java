@@ -3,7 +3,7 @@ package dk.easv.gui;
 import com.jfoenix.controls.*;
 import dk.easv.bll.bot.IBot;
 import static dk.easv.gui.util.FontAwesomeHelper.getFontAwesomeIconFromPlayerId;
-import static dk.easv.dal.FileHelper.loadBotList;
+import static dk.easv.dal.DynamicBotClassReader.loadBotList;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -22,6 +22,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.collections.FXCollections;
+import javafx.scene.layout.AnchorPane;
 
 public class AppController implements Initializable {
 
@@ -52,6 +53,10 @@ public class AppController implements Initializable {
     private JFXRadioButton radioLeftHuman;
     @FXML
     private JFXSlider sliderSpeed;
+    
+    StatsModel statsModel = new StatsModel();
+    @FXML
+    private AnchorPane anchorMain;
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -83,6 +88,25 @@ public class AppController implements Initializable {
         comboBotsRight.setDisable(true);
 
     }
+
+    @FXML
+    private void clickOpenStats(ActionEvent event) throws IOException {
+        Stage primaryStage = new Stage();
+        primaryStage.initModality(Modality.WINDOW_MODAL);
+        FXMLLoader fxLoader = new FXMLLoader(
+                getClass().getResource("Stats.fxml"));
+
+        Parent root = fxLoader.load();
+
+        StatsController controller = 
+                ((StatsController) fxLoader.getController());
+        controller.setStatsModel(statsModel);
+        Scene scene = new Scene(root);
+        primaryStage.setScene(scene);
+        primaryStage.showAndWait();
+
+    }
+    
     private class CustomIBotListCell extends ListCell<IBot> {
 
         @Override
@@ -138,6 +162,7 @@ public class AppController implements Initializable {
         }
         controller.setSpeed(sliderSpeed.getMax()-sliderSpeed.getValue());
         controller.startGame();
+        controller.setStatsModel(statsModel);
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.showAndWait();

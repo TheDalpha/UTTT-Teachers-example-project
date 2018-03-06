@@ -17,7 +17,7 @@ import javafx.collections.ObservableList;
  *
  * @author jeppjleemoritzled
  */
-public class FileHelper {
+public class DynamicBotClassReader {
     private static String getFilenameNoExtension(Path path) {
         String fileName = path.getFileName().toFile().getName();
         if (fileName.indexOf(".") > 0) {

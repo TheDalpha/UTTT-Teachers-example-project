@@ -6,6 +6,7 @@ import dk.easv.bll.bot.*;
 
 import dk.easv.bll.field.IField;
 import dk.easv.bll.game.GameManager;
+import dk.easv.bll.game.stats.GameResult;
 import dk.easv.bll.move.IMove;
 import dk.easv.bll.move.Move;
 import static dk.easv.gui.util.FontAwesomeHelper.getFontAwesomeIconFromPlayerId;
@@ -35,6 +36,7 @@ public class UTTTGameController implements Initializable {
     private final JFXButton[][] jfxButtons = new JFXButton[9][9];
 
     BoardModel model;
+    StatsModel statsModel;
     IBot bot0 = null;
     IBot bot1 = null;
     String player0 = null;
@@ -94,7 +96,7 @@ public class UTTTGameController implements Initializable {
         return validMove;
     }
 
-    private String getWinnerName(int winnerId) {
+    private String getNameFromId(int winnerId) {
         if (winnerId == 0) {
             if (bot0 != null)
                 return bot0.getBotName();
@@ -112,11 +114,23 @@ public class UTTTGameController implements Initializable {
 
     private void showWinnerPane(String winner) {
         String winMsg;
+        GameResult.Winner winStatus = GameResult.Winner.tie;
         if (winner.equalsIgnoreCase("TIE"))
             winMsg = "Game tie";
-        else
-            winMsg = getWinnerName(Integer.parseInt(winner)) + " wins";
-
+        else {
+            int winnerId = Integer.parseInt(winner);
+            winMsg = getNameFromId(winnerId) + " wins";
+            winStatus = winnerId==0?
+                    GameResult.Winner.player0:
+                    GameResult.Winner.player1;
+        }
+        
+        GameResult gr = new GameResult(
+                getNameFromId(0), 
+                getNameFromId(1), 
+                winStatus);
+        statsModel.addGameResult(gr);
+        
         Label lblWinAnnounce = new Label(winMsg);
         lblWinAnnounce.setAlignment(Pos.CENTER);
         lblWinAnnounce.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
@@ -156,7 +170,7 @@ public class UTTTGameController implements Initializable {
         gridPane.add(lbl, 0, 0);
         gridPane.add(lblWinAnnounce, 0, 1);
         gridPane.setGridLinesVisible(true);
-
+        
         Platform.runLater(() -> stackMain.getChildren().add(gridPane));
 
     }
@@ -235,10 +249,10 @@ public class UTTTGameController implements Initializable {
                 }
             }
             if (model.getGameOverState().equals(GameManager.GameOverState.Tie)) {
-                showWinnerPane("TIE");
+                Platform.runLater(()->showWinnerPane("TIE"));
             }
             else {
-                showWinnerPane(currentPlayer + "");
+                Platform.runLater(()->showWinnerPane(currentPlayer + ""));
             }
         }
     }
@@ -335,5 +349,9 @@ public class UTTTGameController implements Initializable {
 
     public void setSpeed(double speed) {
         botDelay = Math.round(speed);
+    }
+
+    public void setStatsModel(StatsModel statsModel) {
+        this.statsModel = statsModel;
     }
 }
