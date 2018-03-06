@@ -2,8 +2,9 @@ package dk.easv.gui;
 
 import com.jfoenix.controls.*;
 import dk.easv.bll.bot.IBot;
+import dk.easv.dal.DynamicBotClassHandler;
 import static dk.easv.gui.util.FontAwesomeHelper.getFontAwesomeIconFromPlayerId;
-import static dk.easv.dal.DynamicBotClassReader.loadBotList;
+import static dk.easv.dal.DynamicBotClassHandler.loadBotList;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -60,8 +61,10 @@ public class AppController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+        
         ObservableList<IBot> bots = FXCollections.observableArrayList();
         try {
+            DynamicBotClassHandler.writeBotsToTextFile();
             bots = loadBotList();
         }
         catch (IOException | ClassNotFoundException | InstantiationException | IllegalAccessException ex) {
