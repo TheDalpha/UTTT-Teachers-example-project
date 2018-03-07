@@ -72,7 +72,7 @@ public class StatsController implements Initializable {
                 this.getStyleClass().add(styleClass);
                 this.getStyleClass().add("stat-items");
                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern(
-                        "dd-MM-yyyy HH:MM:SS");
+                        "dd-MM-yyyy HH:mm:ss");
                 this.setText(item.getDate().format(dtf) + "\t" +
                         item.getPlayer0() + 
                         " vs " + 
