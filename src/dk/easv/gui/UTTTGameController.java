@@ -223,8 +223,10 @@ public class UTTTGameController implements Initializable {
                                     doMove((IMove) btn.getUserData()); // Player move
 
                                     boolean isHumanVsBot = player0 != null ^ player1 != null;
-                                    if (isHumanVsBot) {
-                                        doBotMove();
+                                    if (model.getGameOverState() == GameManager.GameOverState.Active && isHumanVsBot) {
+                                        int currentPlayer = model.getCurrentPlayer();
+                                        Boolean valid = model.doMove();
+                                        checkAndLockIfGameEnd(currentPlayer);
                                     }
                                 }
                         );
