@@ -54,6 +54,7 @@ public class StatsController implements Initializable {
         protected void updateItem(GameResult item, boolean empty) {
             super.updateItem(item, empty);
             Node fontAwe=FontAwesomeHelper.getFontAwesomeIconFromPlayerId("TIE");
+            this.getStyleClass().removeAll();
             String winName = "Tie";
             String styleClass = "playerTIE";
             if (!empty && item != null) {
