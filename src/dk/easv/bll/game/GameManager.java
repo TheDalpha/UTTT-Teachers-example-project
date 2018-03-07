@@ -159,7 +159,10 @@ public class GameManager {
         IField field = currentState.getField();
         boolean isValid=field.isInActiveMicroboard(move.getX(), move.getY());
 
-        if(!field.getBoard()[move.getX()][move.getY()].equals(IField.EMPTY_FIELD))
+        if(isValid && (move.getX() < 0 || 9 <= move.getX())) isValid = false;
+        if(isValid && (move.getY() < 0 || 9 <= move.getY())) isValid = false;
+
+        if(isValid && !field.getBoard()[move.getX()][move.getY()].equals(IField.EMPTY_FIELD))
             isValid=false;
 
         return isValid;
