@@ -10,13 +10,11 @@ import dk.easv.bll.game.stats.GameResult;
 import dk.easv.bll.game.stats.GameResult.Winner;
 import dk.easv.gui.util.FontAwesomeHelper;
 import java.net.URL;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
-import javafx.geometry.NodeOrientation;
 import javafx.scene.Node;
 import javafx.scene.control.ContentDisplay;
 import javafx.scene.control.ListCell;
@@ -32,6 +30,8 @@ public class StatsController implements Initializable {
     private JFXListView<GameResult> listResults;
 
     private StatsModel statsModel;
+    
+    private String[] allPlayerstyles = {"playerTIE","player0","player1"};
 
     @Override
     public void initialize(URL url, ResourceBundle rb) {
@@ -54,7 +54,7 @@ public class StatsController implements Initializable {
         protected void updateItem(GameResult item, boolean empty) {
             super.updateItem(item, empty);
             Node fontAwe=FontAwesomeHelper.getFontAwesomeIconFromPlayerId("TIE");
-            this.getStyleClass().removeAll();
+            this.getStyleClass().removeAll(allPlayerstyles);
             String winName = "Tie";
             String styleClass = "playerTIE";
             if (!empty && item != null) {
